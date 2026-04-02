@@ -27,6 +27,7 @@ export function AgendaEditorModal({ item, onClose, onSaved }: Props) {
   const [concept, setConcept] = useState(item.concept);
   const [title, setTitle] = useState(item.title);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
 
@@ -47,6 +48,7 @@ export function AgendaEditorModal({ item, onClose, onSaved }: Props) {
 
   const handleSave = async () => {
     setSaving(true);
+    setError(null);
     const notes = editorRef.current?.innerHTML || "";
     try {
       const res = await fetch("/api/agenda", {
@@ -54,8 +56,18 @@ export function AgendaEditorModal({ item, onClose, onSaved }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: item.date, concept, title, notes }),
       });
-      if (res.ok) { onSaved({ date: item.date, concept, title, notes }); onClose(); }
-    } finally { setSaving(false); }
+      if (res.ok) {
+        onSaved({ date: item.date, concept, title, notes });
+        onClose();
+      } else {
+        const text = await res.text();
+        setError(text || "Failed to save");
+      }
+    } catch (err: any) {
+      setError(err.message || "Network error");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const dateObj = new Date(item.date + "T00:00:00");
@@ -64,7 +76,7 @@ export function AgendaEditorModal({ item, onClose, onSaved }: Props) {
   return (
     <div
       ref={backdropRef}
-      className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm"
       onClick={(e) => e.target === backdropRef.current && onClose()}
     >
       <div className="w-full max-w-lg animate-modal-enter" style={{ opacity: 0 }}>
@@ -150,6 +162,13 @@ export function AgendaEditorModal({ item, onClose, onSaved }: Props) {
                   />
                 </div>
               </div>
+
+              {/* Error */}
+              {error && (
+                <div className="text-sm text-red-600 bg-red-50 ring-1 ring-red-200 rounded-xl px-3 py-2 font-medium">
+                  {error}
+                </div>
+              )}
 
               {/* Actions */}
               <div className="flex items-center justify-end gap-3 pt-2">
