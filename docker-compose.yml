@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: avacadabra_app
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - MINIO_ENDPOINT=${MINIO_ENDPOINT}
+      - MINIO_PORT=${MINIO_PORT}
+      - MINIO_USE_SSL=${MINIO_USE_SSL}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_BUCKET=${MINIO_BUCKET}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    networks:
+      - proxy
+    labels:
+      # Expose the service to Traefik on the proxy network
+      - traefik.enable=true
+      - traefik.http.routers.avacadabra.rule=Host(`ava.delo.sh`)
+      - traefik.http.routers.avacadabra.entrypoints=websecure
+      - traefik.http.services.avacadabra.loadbalancer.server.port=3000
+  db:
+    image: postgres:15
+    container_name: avacadabra_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=avacadabra
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - proxy
+
+volumes:
+  db_data:
+
+networks:
+  proxy:
+    external: true

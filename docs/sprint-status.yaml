@@ -1,0 +1,50 @@
+version: "6.0.0"
+project_name: "avacadabra"
+project_level: 1
+current_sprint: 1
+sprint_plan_path: "docs/sprint-plan-ava-2026-04-02.md"
+
+sprints:
+  - sprint_number: 1
+    start_date: "2026-04-03"
+    end_date: "2026-04-06"
+    capacity_points: 18
+    committed_points: 16
+    completed_points: 0
+    status: "not_started"
+    goal: "Deliver complete AvaMath v1 with teacher dashboard, student progress history, and production deployment"
+    stories:
+      - story_id: "STORY-001"
+        title: "Navigation & Layout"
+        points: 2
+        status: "not_started"
+        day: 1
+      - story_id: "STORY-002"
+        title: "Progress Stats API"
+        points: 3
+        status: "not_started"
+        day: 1
+      - story_id: "STORY-003"
+        title: "Teacher Dashboard Page"
+        points: 5
+        status: "not_started"
+        day: 2
+      - story_id: "STORY-004"
+        title: "Progress History Page"
+        points: 4
+        status: "not_started"
+        day: 2
+      - story_id: "STORY-005"
+        title: "Deployment & Smoke Test"
+        points: 2
+        status: "not_started"
+        day: 3
+
+velocity:
+  sprint_1: null
+  rolling_average: null
+
+team:
+  size: 1
+  sprint_length_days: 3
+  capacity_per_sprint: 18

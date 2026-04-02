@@ -1,0 +1,52 @@
+bmm_workflow_status:
+  initialized_at: "2026-04-02T00:00:00Z"
+  project_name: "avacadabra"
+  project_type: "web-app"
+  project_level: 1
+
+  phases:
+    phase_1_analysis:
+      name: "Analysis"
+      status: "completed"
+      artifacts:
+        product_brief:
+          status: "completed"
+          file: "docs/product-brief-ava-2026-04-02.md"
+
+    phase_2_planning:
+      name: "Planning"
+      status: "not_started"
+      artifacts:
+        prd:
+          status: "recommended"
+          file: null
+        tech_spec:
+          status: "completed"
+          file: "docs/tech-spec-ava-2026-04-02.md"
+        architecture:
+          status: "optional"
+          file: null
+
+    phase_3_design:
+      name: "Design"
+      status: "not_started"
+      artifacts:
+        ux_design:
+          status: "optional"
+          file: null
+
+    phase_4_implementation:
+      name: "Implementation"
+      status: "not_started"
+      artifacts:
+        sprint_planning:
+          status: "completed"
+          file: "docs/sprint-plan-ava-2026-04-02.md"
+        stories:
+          status: "in_progress"
+          completed: 0
+          total: 5
+
+  current_phase: "phase_4_implementation"
+  next_action: "dev-story STORY-001"
+  last_updated: "2026-04-02"
