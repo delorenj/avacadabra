@@ -1,16 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
-  padding: 0;
-  margin: 0;
-  font-family: ui-sans-serif, system-ui;
-  background-color: #f9fafb;
+@layer base {
+  html {
+    font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply min-h-[100dvh] text-gray-800;
+    padding: 0;
+    margin: 0;
+    background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 30%, #f0f9ff 60%, #ffffff 100%);
+    background-attachment: fixed;
+  }
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+@layer components {
+  /* ── Cloud shapes ── */
+  .cloud {
+    @apply absolute;
+    background: white;
+    border-radius: 999px;
+    opacity: 0.7;
+    filter: blur(0.5px);
+  }
+  .cloud::before,
+  .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 999px;
+  }
+
+  .cloud-sm {
+    width: 72px;
+    height: 24px;
+  }
+  .cloud-sm::before { width: 32px; height: 32px; top: -16px; left: 10px; }
+  .cloud-sm::after  { width: 22px; height: 22px; top: -9px; left: 38px; }
+
+  .cloud-md {
+    width: 120px;
+    height: 36px;
+  }
+  .cloud-md::before { width: 50px; height: 50px; top: -28px; left: 18px; }
+  .cloud-md::after  { width: 34px; height: 34px; top: -14px; left: 64px; }
+
+  .cloud-lg {
+    width: 168px;
+    height: 46px;
+  }
+  .cloud-lg::before { width: 66px; height: 66px; top: -36px; left: 26px; }
+  .cloud-lg::after  { width: 46px; height: 46px; top: -20px; left: 94px; }
+
+  /* ── Rainbow arc ── */
+  .rainbow-arc {
+    background: conic-gradient(
+      from 180deg,
+      transparent 0deg,
+      #ef4444 0deg, #f97316 30deg, #eab308 60deg,
+      #22c55e 90deg, #3b82f6 120deg, #8b5cf6 150deg, #ec4899 180deg,
+      transparent 180deg
+    );
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px), #000 calc(100% - 1px), transparent 100%);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px), #000 calc(100% - 1px), transparent 100%);
+  }
+
+  /* ── Double-bezel premium card (Doppelrand) ── */
+  .bevel-card {
+    @apply p-1.5 rounded-4xl;
+    background: rgba(255, 255, 255, 0.35);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.03);
+  }
+  .bevel-card-inner {
+    @apply bg-surface-1 backdrop-blur-sm shadow-ambient rounded-[calc(2rem-0.375rem)] p-5;
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.5),
+      0 1px 2px rgba(0,0,0,0.03),
+      0 4px 12px rgba(0,0,0,0.04),
+      0 0 0 1px rgba(0,0,0,0.02);
+    transition: box-shadow 0.5s cubic-bezier(0.32,0.72,0,1), transform 0.5s cubic-bezier(0.32,0.72,0,1);
+  }
+  .bevel-card:hover .bevel-card-inner {
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.5),
+      0 2px 4px rgba(0,0,0,0.04),
+      0 8px 24px rgba(0,0,0,0.06),
+      0 0 0 1px rgba(0,0,0,0.02);
+    transform: translateY(-2px);
+  }
+
+  /* ── Day card states ── */
+  .day-card-past .bevel-card-inner {
+    @apply border-l-[3px] border-sky-400;
+  }
+  .day-card-today .bevel-card-inner {
+    @apply border-l-[3px] border-sunny-400;
+    background: rgba(255, 251, 235, 0.9);
+    box-shadow:
+      inset 0 1px 1px rgba(255,255,255,0.5),
+      0 4px 20px rgba(251,191,36,0.15),
+      0 0 0 1px rgba(251,191,36,0.1);
+  }
+  .day-card-future .bevel-card-inner {
+    @apply border-l-[3px] border-sky-200;
+    background: rgba(255, 255, 255, 0.65);
+  }
+
+  /* ── Eyebrow tag ── */
+  .eyebrow {
+    @apply inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] uppercase tracking-[0.15em] font-semibold;
+  }
+
+  /* ── Shimmer skeleton ── */
+  .shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+}
+
+@layer utilities {
+  .text-rainbow {
+    background: linear-gradient(90deg, #ef4444, #f97316, #eab308, #22c55e, #3b82f6, #8b5cf6, #ec4899);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-shift 8s ease-in-out infinite;
+  }
+}
+
+/* ── Sun glow ── */
+.sun-glow {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(251,191,36,0.45) 0%, rgba(251,191,36,0.1) 50%, transparent 70%);
+  border-radius: 999px;
+  animation: sun-pulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(14, 165, 233, 0.2);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(14, 165, 233, 0.35);
+}
+
+/* ── Noise overlay for physical texture ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }

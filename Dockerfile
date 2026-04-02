@@ -1,17 +1,20 @@
-FROM node:18-alpine as base
-
+FROM node:18-alpine AS deps
 WORKDIR /app
-
-# Install dependencies
 COPY package.json package-lock.json* ./
-RUN npm install --production || true
+RUN npm install
 
-# Copy the rest of the code
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+RUN npm run build
 
-# Build the Next.js app
-RUN npm run build || true
+FROM node:18-alpine AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+CMD ["node", "server.js"]
