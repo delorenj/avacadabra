@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { MathContent } from "./math-content";
 
 interface AgendaItem {
   date: string;
@@ -28,6 +29,8 @@ export function AgendaEditorModal({ item, onClose, onSaved }: Props) {
   const [title, setTitle] = useState(item.title);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(true);
+  const [previewHtml, setPreviewHtml] = useState(item.notes);
   const editorRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
 
@@ -40,6 +43,10 @@ export function AgendaEditorModal({ item, onClose, onSaved }: Props) {
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, [onClose]);
+
+  const syncPreview = useCallback(() => {
+    if (editorRef.current) setPreviewHtml(editorRef.current.innerHTML);
+  }, []);
 
   const exec = useCallback((cmd: string) => {
     document.execCommand(cmd, false);
@@ -127,40 +134,62 @@ export function AgendaEditorModal({ item, onClose, onSaved }: Props) {
 
               {/* WYSIWYG */}
               <div>
-                <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Notes & Plan</label>
-                <div className="ring-1 ring-sky-200/60 rounded-xl overflow-hidden bg-white shadow-inner-highlight">
-                  {/* Toolbar */}
-                  <div className="flex items-center gap-0.5 border-b border-sky-100 px-2 py-1.5 bg-sky-50/40">
-                    {[
-                      { label: "B", cmd: "bold", cls: "font-bold" },
-                      { label: "I", cmd: "italic", cls: "italic" },
-                      { label: "U", cmd: "underline", cls: "underline" },
-                    ].map((b) => (
-                      <button
-                        key={b.cmd}
-                        type="button"
-                        title={b.cmd}
-                        onMouseDown={(e) => { e.preventDefault(); exec(b.cmd); }}
-                        className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs text-sky-700 hover:bg-sky-100 transition-all duration-200 ${b.cls}`}
-                      >{b.label}</button>
-                    ))}
-                    <div className="w-px h-4 bg-sky-200 mx-1" />
-                    <button type="button" title="Bullet list" onMouseDown={(e) => { e.preventDefault(); exec("insertUnorderedList"); }}
-                      className="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-sky-700 hover:bg-sky-100 transition-all duration-200"
-                    >{"\u2022"}</button>
-                    <button type="button" title="Numbered list" onMouseDown={(e) => { e.preventDefault(); exec("insertOrderedList"); }}
-                      className="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-sky-700 hover:bg-sky-100 transition-all duration-200"
-                    >1.</button>
-                  </div>
-                  {/* Editor */}
-                  <div
-                    ref={editorRef}
-                    contentEditable
-                    className="min-h-[120px] max-h-[220px] overflow-y-auto px-3.5 py-3 text-sm text-gray-700 focus:outline-none
-                      [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-0.5 [&_b]:font-semibold"
-                    suppressContentEditableWarning
-                  />
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider">Notes & Plan</label>
+                  <button
+                    type="button"
+                    onClick={() => { syncPreview(); setShowPreview((p) => !p); }}
+                    className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1 rounded-full transition-all duration-300 ease-out-expo ${
+                      showPreview
+                        ? "bg-sky-100 text-sky-700 ring-1 ring-sky-300"
+                        : "text-gray-400 hover:text-sky-600 hover:bg-sky-50"
+                    }`}
+                  >
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    {showPreview ? "Edit" : "Preview"}
+                  </button>
                 </div>
+
+                {showPreview ? (
+                  <MathContent html={previewHtml} worksheet className="min-h-[120px]" />
+                ) : (
+                  <div className="ring-1 ring-sky-200/60 rounded-xl overflow-hidden bg-white shadow-inner-highlight">
+                    {/* Toolbar */}
+                    <div className="flex items-center gap-0.5 border-b border-sky-100 px-2 py-1.5 bg-sky-50/40">
+                      {[
+                        { label: "B", cmd: "bold", cls: "font-bold" },
+                        { label: "I", cmd: "italic", cls: "italic" },
+                        { label: "U", cmd: "underline", cls: "underline" },
+                      ].map((b) => (
+                        <button
+                          key={b.cmd}
+                          type="button"
+                          title={b.cmd}
+                          onMouseDown={(e) => { e.preventDefault(); exec(b.cmd); }}
+                          className={`w-7 h-7 flex items-center justify-center rounded-lg text-xs text-sky-700 hover:bg-sky-100 transition-all duration-200 ${b.cls}`}
+                        >{b.label}</button>
+                      ))}
+                      <div className="w-px h-4 bg-sky-200 mx-1" />
+                      <button type="button" title="Bullet list" onMouseDown={(e) => { e.preventDefault(); exec("insertUnorderedList"); }}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-sky-700 hover:bg-sky-100 transition-all duration-200"
+                      >{"\u2022"}</button>
+                      <button type="button" title="Numbered list" onMouseDown={(e) => { e.preventDefault(); exec("insertOrderedList"); }}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg text-xs text-sky-700 hover:bg-sky-100 transition-all duration-200"
+                      >1.</button>
+                    </div>
+                    {/* Editor */}
+                    <div
+                      ref={editorRef}
+                      contentEditable
+                      className="min-h-[120px] max-h-[220px] overflow-y-auto px-3.5 py-3 text-sm text-gray-700 focus:outline-none
+                        [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4 [&_li]:mb-0.5 [&_b]:font-semibold"
+                      suppressContentEditableWarning
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Error */}

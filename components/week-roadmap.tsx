@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { AgendaEditorModal } from "./agenda-editor-modal";
 import { TeacherNoteModal } from "./teacher-note-modal";
+import { MathContent } from "./math-content";
 
 interface ProgressEntry {
   id: number;
@@ -221,7 +222,12 @@ export function WeekRoadmap() {
 
                   if (vacation) {
                     return (
-                      <div key={dateStr} className="bevel-card opacity-60">
+                      <div key={dateStr} className="bevel-card opacity-60 relative">
+                        {isToday && (
+                          <div className="absolute -top-1 -right-1 z-10 animate-float">
+                            <img src="/8bitava.png" alt="Today" className="w-10 h-10 rounded-full ring-2 ring-sunny-400 shadow-sunny" />
+                          </div>
+                        )}
                         <div className="bevel-card-inner !p-3 border-l-[3px] border-orange-300 relative overflow-hidden">
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-[10px] font-semibold text-gray-400 line-through">
@@ -245,7 +251,7 @@ export function WeekRoadmap() {
                       key={dateStr}
                       onClick={() => handleDayClick(day, dateStr)}
                       className={`
-                        bevel-card text-left group
+                        bevel-card text-left group relative
                         ${isToday ? "day-card-today" : isPast ? "day-card-past" : "day-card-future"}
                         ${isExpanded ? "sm:col-span-5" : ""}
                         ${isFuture ? "cursor-pointer" : ""}
@@ -256,9 +262,13 @@ export function WeekRoadmap() {
                       <div className={`bevel-card-inner !p-3 ${isExpanded ? "sm:grid sm:grid-cols-[1fr_2fr] sm:gap-5" : ""}`}>
                         {/* Today badge */}
                         {isToday && (
-                          <span className="absolute -top-2 -right-2 z-10 px-2.5 py-0.5 bg-sunny-400 text-white text-[9px] font-bold rounded-full shadow-sunny animate-float tracking-wide uppercase">
-                            Today
-                          </span>
+                          <div className="absolute -top-1 -right-1 z-10 animate-float">
+                            <img
+                              src="/8bitava.png"
+                              alt="Today"
+                              className="w-10 h-10 rounded-full ring-2 ring-sunny-400 shadow-sunny"
+                            />
+                          </div>
                         )}
 
                         <div className="relative">
@@ -312,27 +322,42 @@ export function WeekRoadmap() {
                         </div>
 
                         {/* Expanded panel */}
-                        {isExpanded && entry && (
+                        {isExpanded && (
                           <div className="mt-4 sm:mt-0 border-t sm:border-t-0 sm:border-l border-sky-200/60 pt-4 sm:pt-0 sm:pl-5">
-                            <h3 className="font-display font-bold text-sm text-sky-800 mb-2">Session Summary</h3>
-                            <p className="text-sm text-gray-600 mb-3 leading-relaxed">{entry.description}</p>
-                            {entry.explanation && (
-                              <div className="bg-sky-50/80 rounded-xl p-3.5 mb-3 ring-1 ring-sky-200/40">
-                                <p className="text-[10px] font-bold text-sky-600 uppercase tracking-wider mb-1">Reflection</p>
-                                <p className="text-sm text-gray-600 leading-relaxed">{entry.explanation}</p>
+                            {/* Lesson plan notes rendered as worksheet */}
+                            {agendaItem?.notes && (
+                              <div className="mb-4">
+                                <h3 className="font-display font-bold text-sm text-sky-800 mb-2">
+                                  Lesson Plan
+                                </h3>
+                                <MathContent html={agendaItem.notes} worksheet />
                               </div>
                             )}
-                            {entry.image_url && (
-                              <div>
-                                <p className="text-[10px] font-bold text-sky-600 uppercase tracking-wider mb-1.5">Show Your Work!</p>
-                                <div className="bevel-card !p-1">
-                                  <img
-                                    src={entry.image_url}
-                                    alt="Student scratch work"
-                                    className="w-full max-w-md rounded-[calc(2rem-0.5rem)] object-cover"
-                                  />
-                                </div>
-                              </div>
+
+                            {/* Session entry data (if student has logged work) */}
+                            {entry && (
+                              <>
+                                <h3 className="font-display font-bold text-sm text-sky-800 mb-2">Session Summary</h3>
+                                <p className="text-sm text-gray-600 mb-3 leading-relaxed">{entry.description}</p>
+                                {entry.explanation && (
+                                  <div className="bg-sky-50/80 rounded-xl p-3.5 mb-3 ring-1 ring-sky-200/40">
+                                    <p className="text-[10px] font-bold text-sky-600 uppercase tracking-wider mb-1">Reflection</p>
+                                    <p className="text-sm text-gray-600 leading-relaxed">{entry.explanation}</p>
+                                  </div>
+                                )}
+                                {entry.image_url && (
+                                  <div>
+                                    <p className="text-[10px] font-bold text-sky-600 uppercase tracking-wider mb-1.5">Show Your Work!</p>
+                                    <div className="bevel-card !p-1">
+                                      <img
+                                        src={entry.image_url}
+                                        alt="Student scratch work"
+                                        className="w-full max-w-md rounded-[calc(2rem-0.5rem)] object-cover"
+                                      />
+                                    </div>
+                                  </div>
+                                )}
+                              </>
                             )}
                           </div>
                         )}

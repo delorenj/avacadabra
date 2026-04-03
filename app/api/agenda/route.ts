@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDbPool } from "../../../lib/db";
 
-const pool = getDbPool();
-
 // Schema is created by db/001-schema.sql on first Postgres boot.
 // Curriculum is seeded by db/002-seed-curriculum.sql.
 // This ensureTable is a safety net for dev environments where the
 // init scripts may not have run (e.g. connecting to an existing DB).
 async function ensureTable() {
+  const pool = getDbPool();
   await pool.query(`
     CREATE TABLE IF NOT EXISTS teaching_agenda (
       id SERIAL PRIMARY KEY,
@@ -42,7 +41,7 @@ export async function GET(req: NextRequest) {
     const endDate = new Date(startMonday);
     endDate.setDate(endDate.getDate() + 34);
 
-    const { rows } = await pool.query(
+    const { rows } = await getDbPool().query(
       "SELECT id, date, concept, title, notes, standard, day_number, updated_at FROM teaching_agenda WHERE date >= $1 AND date <= $2 ORDER BY date",
       [startMonday.toISOString().substring(0, 10), endDate.toISOString().substring(0, 10)]
     );
@@ -71,7 +70,7 @@ export async function PUT(req: NextRequest) {
       return new NextResponse("date is required", { status: 400 });
     }
 
-    const { rows } = await pool.query(
+    const { rows } = await getDbPool().query(
       `INSERT INTO teaching_agenda (date, concept, title, notes, updated_at)
        VALUES ($1, $2, $3, $4, NOW())
        ON CONFLICT (date) DO UPDATE SET

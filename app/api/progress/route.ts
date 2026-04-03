@@ -2,24 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDbPool } from '../../../lib/db';
 import { Client as MinioClient } from 'minio';
 
-// Create a Postgres pool once per container. Connection details are read from DATABASE_URL.
-const pool = getDbPool();
+function getMinioClient() {
+  return new MinioClient({
+    endPoint: process.env.MINIO_ENDPOINT || 'localhost',
+    port: process.env.MINIO_PORT ? parseInt(process.env.MINIO_PORT, 10) : 9000,
+    useSSL: process.env.MINIO_USE_SSL === 'true',
+    accessKey: process.env.MINIO_ACCESS_KEY || '',
+    secretKey: process.env.MINIO_SECRET_KEY || ''
+  });
+}
 
-// Configure a MinIO/S3 client. The MINIO_ENDPOINT, MINIO_PORT, MINIO_ACCESS_KEY,
-// MINIO_SECRET_KEY, and MINIO_BUCKET environment variables must be provided at runtime.
-const minioClient = new MinioClient({
-  endPoint: process.env.MINIO_ENDPOINT || 'localhost',
-  port: process.env.MINIO_PORT ? parseInt(process.env.MINIO_PORT, 10) : 9000,
-  useSSL: process.env.MINIO_USE_SSL === 'true',
-  accessKey: process.env.MINIO_ACCESS_KEY || '',
-  secretKey: process.env.MINIO_SECRET_KEY || ''
-});
+function getBucket() { return process.env.MINIO_BUCKET || 'avamath'; }
 
-const bucket = process.env.MINIO_BUCKET || 'avamath';
-
-// Helper to ensure the table exists. It’s safe to call this on each request.
 async function ensureTable() {
-  await pool.query(`
+  await getDbPool().query(`
     CREATE TABLE IF NOT EXISTS progress_entries (
       id SERIAL PRIMARY KEY,
       date DATE NOT NULL,
@@ -33,10 +29,9 @@ async function ensureTable() {
 }
 
 export async function GET() {
-  // Return the most recent 30 progress entries, newest first.
   try {
     await ensureTable();
-    const { rows } = await pool.query(
+    const { rows } = await getDbPool().query(
       'SELECT id, date, concept, description, explanation, image_url, created_at FROM progress_entries ORDER BY created_at DESC LIMIT 30'
     );
     return NextResponse.json({ entries: rows });
@@ -58,22 +53,22 @@ export async function POST(req: NextRequest) {
 
     let imageUrl: string | null = null;
     if (file && file.size > 0) {
-      // Convert Blob to Buffer for minio upload
       const arrayBuffer = await file.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
-      // Ensure bucket exists
-      const exists = await minioClient.bucketExists(bucket).catch(() => false);
+      const minio = getMinioClient();
+      const bkt = getBucket();
+      const exists = await minio.bucketExists(bkt).catch(() => false);
       if (!exists) {
-        await minioClient.makeBucket(bucket, 'us-east-1');
+        await minio.makeBucket(bkt, 'us-east-1');
       }
       const objectName = `${Date.now()}-${file.name}`;
-      await minioClient.putObject(bucket, objectName, buffer);
+      await minio.putObject(bkt, objectName, buffer);
       const protocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
       const port = process.env.MINIO_PORT || '9000';
-      imageUrl = `${protocol}://${process.env.MINIO_ENDPOINT}:${port}/${bucket}/${objectName}`;
+      imageUrl = `${protocol}://${process.env.MINIO_ENDPOINT}:${port}/${bkt}/${objectName}`;
     }
 
-    await pool.query(
+    await getDbPool().query(
       'INSERT INTO progress_entries (date, concept, description, explanation, image_url) VALUES ($1, $2, $3, $4, $5)',
       [date, concept, description, explanation, imageUrl]
     );

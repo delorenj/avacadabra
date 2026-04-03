@@ -1,4 +1,5 @@
 import "./globals.css";
+import "katex/dist/katex.min.css";
 import { ReactNode } from "react";
 import { AnimatedBackground } from "../components/animated-background";
 import { SparkleText } from "../components/sparkle-text";
