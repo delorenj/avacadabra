@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Pool } from "pg";
+import { getDbPool } from "@/lib/db";
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = getDbPool();
 
 // Schema is created by db/001-schema.sql on first Postgres boot.
 // Curriculum is seeded by db/002-seed-curriculum.sql.

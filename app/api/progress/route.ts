@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
+import { getDbPool } from '@/lib/db';
 import { Client as MinioClient } from 'minio';
 
 // Create a Postgres pool once per container. Connection details are read from DATABASE_URL.
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
-});
+const pool = getDbPool();
 
 // Configure a MinIO/S3 client. The MINIO_ENDPOINT, MINIO_PORT, MINIO_ACCESS_KEY,
 // MINIO_SECRET_KEY, and MINIO_BUCKET environment variables must be provided at runtime.

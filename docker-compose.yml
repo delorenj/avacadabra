@@ -5,7 +5,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/avacadabra}
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@avacadabra_db:5432/avacadabra}
       - MINIO_ENDPOINT=${MINIO_ENDPOINT:-drive.delo.sh}
       - MINIO_PORT=${MINIO_PORT:-9000}
       - MINIO_USE_SSL=${MINIO_USE_SSL:-true}
@@ -15,7 +15,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      avacadabra_db:
+        condition: service_healthy
     networks:
       - proxy
     labels:
@@ -24,7 +25,7 @@ services:
       - traefik.http.routers.avacadabra.rule=Host(`ava.delo.sh`)
       - traefik.http.routers.avacadabra.entrypoints=websecure
       - traefik.http.services.avacadabra.loadbalancer.server.port=3000
-  db:
+  avacadabra_db:
     image: postgres:15
     container_name: avacadabra_db
     restart: unless-stopped
@@ -35,6 +36,12 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d avacadabra"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     networks:
       - proxy
 
