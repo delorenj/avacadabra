@@ -67,6 +67,7 @@ module.exports = {
         'shimmer': 'shimmer 2s linear infinite',
         'sun-pulse': 'sun-pulse 4s ease-in-out infinite',
         'modal-enter': 'modal-enter 0.4s cubic-bezier(0.32,0.72,0,1) forwards',
+        'nudge': 'nudge 1.2s cubic-bezier(0.32,0.72,0,1) 3s forwards',
       },
       keyframes: {
         'cloud-drift': {
@@ -104,6 +105,13 @@ module.exports = {
         'modal-enter': {
           '0%': { opacity: '0', transform: 'scale(0.95) translateY(12px)' },
           '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+        },
+        'nudge': {
+          '0%': { transform: 'scale(1)', filter: 'brightness(1)' },
+          '20%': { transform: 'scale(1.12)', filter: 'brightness(1.3)' },
+          '40%': { transform: 'scale(0.97)', filter: 'brightness(1)' },
+          '60%': { transform: 'scale(1.05)', filter: 'brightness(1.15)' },
+          '80%, 100%': { transform: 'scale(1)', filter: 'brightness(1)' },
         },
       },
       backgroundImage: {

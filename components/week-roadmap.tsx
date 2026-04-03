@@ -154,7 +154,7 @@ export function WeekRoadmap() {
       <div className="text-center animate-enter-delay-4" style={{ opacity: 0 }}>
         <button
           onClick={() => setShowTeacherNote(true)}
-          className="inline-flex items-center gap-2 text-[11px] font-semibold text-sky-400 hover:text-sky-600 transition-colors duration-500 ease-out-expo group uppercase tracking-[0.12em]"
+          className="inline-flex items-center gap-2 text-[11px] font-semibold text-sky-400 hover:text-sky-600 transition-colors duration-500 ease-out-expo group uppercase tracking-[0.12em] animate-nudge"
         >
           <svg className="w-3.5 h-3.5 transition-transform duration-500 ease-out-expo group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
