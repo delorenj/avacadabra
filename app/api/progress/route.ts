@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getDbPool } from '@/lib/db';
+import { getDbPool } from '../../../lib/db';
 import { Client as MinioClient } from 'minio';
 
 // Create a Postgres pool once per container. Connection details are read from DATABASE_URL.

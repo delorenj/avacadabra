@@ -1,0 +1,107 @@
+Stopping containers...
+time="2026-04-03T00:23:55-04:00" level=warning msg="Warning: No resource found to remove for project \"avacadabra\"."
+Starting containers...
+ Image avacadabra-app Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 506B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 463B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/node:18-alpine
+#3 DONE 0.1s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [deps 1/4] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 7.50kB done
+#6 DONE 0.0s
+
+#7 [deps 2/4] WORKDIR /app
+#7 CACHED
+
+#8 [deps 3/4] COPY package.json package-lock.json* ./
+#8 CACHED
+
+#9 [deps 4/4] RUN npm install
+#9 CACHED
+
+#10 [builder 3/5] COPY --from=deps /app/node_modules ./node_modules
+#10 CACHED
+
+#11 [builder 4/5] COPY . .
+#11 DONE 0.0s
+
+#12 [builder 5/5] RUN npm run build
+#12 0.299 
+#12 0.299 > avacadabra@1.0.0 build
+#12 0.299 > next build
+#12 0.299 
+#12 0.594 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#12 0.594 This information is used to shape Next.js' roadmap and prioritize features.
+#12 0.594 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#12 0.594 https://nextjs.org/telemetry
+#12 0.594 
+#12 0.627   ▲ Next.js 14.2.35
+#12 0.627   - Environments: .env
+#12 0.627 
+#12 0.662    Creating an optimized production build ...
+#12 2.538 Failed to compile.
+#12 2.538 
+#12 2.538 ./app/api/agenda/route.ts
+#12 2.538 Module not found: Can't resolve '@/lib/db'
+#12 2.538 
+#12 2.538 https://nextjs.org/docs/messages/module-not-found
+#12 2.538 
+#12 2.538 ./app/api/progress/route.ts
+#12 2.538 Module not found: Can't resolve '@/lib/db'
+#12 2.538 
+#12 2.538 https://nextjs.org/docs/messages/module-not-found
+#12 2.538 
+#12 2.546 
+#12 2.546 > Build failed because of webpack errors
+#12 2.558 npm notice
+#12 2.558 npm notice New major version of npm available! 10.8.2 -> 11.12.1
+#12 2.558 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+#12 2.558 npm notice To update run: npm install -g npm@11.12.1
+#12 2.558 npm notice
+#12 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+------
+ > [builder 5/5] RUN npm run build:
+2.538 
+2.538 https://nextjs.org/docs/messages/module-not-found
+2.538 
+2.546 
+2.546 > Build failed because of webpack errors
+2.558 npm notice
+2.558 npm notice New major version of npm available! 10.8.2 -> 11.12.1
+2.558 npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+2.558 npm notice To update run: npm install -g npm@11.12.1
+2.558 npm notice
+------
+Dockerfile:10
+
+--------------------
+
+   8 |     COPY --from=deps /app/node_modules ./node_modules
+
+   9 |     COPY . .
+
+  10 | >>> RUN npm run build
+
+  11 |     
+
+  12 |     FROM node:18-alpine AS runner
+
+--------------------
+
+failed to solve: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+
+Done!

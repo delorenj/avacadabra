@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getDbPool } from "@/lib/db";
+import { getDbPool } from "../../../lib/db";
 
 const pool = getDbPool();
 
